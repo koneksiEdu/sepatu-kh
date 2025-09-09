@@ -25,12 +25,17 @@
               <i class="bi bi-person"></i> Akun
             </a>
             <ul class="dropdown-menu border-0 shadow-lg rounded-3 mt-2" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
-              <li v-if="isLogin"><a class="dropdown-item" href="#">Profil</a></li>
               <li v-if="!isLogin"><a class="dropdown-item" href="/register">Daftar</a></li>
               <li v-if="!isLogin"><a class="dropdown-item" href="/login">Masuk</a></li>
-              <li v-if="isLogin"><hr class="dropdown-divider" /></li>
+              <!-- <li v-if="isLogin"><hr class="dropdown-divider" /></li> -->
               <li v-if="isLogin"><a class="dropdown-item" href="#" @click="logout">Keluar</a></li>
             </ul>
+          </li>
+
+          <li v-if="user?.role === 'admin'" class="nav-item">
+            <a class="nav-link active fw-semibold px-3 py-2 rounded-pill me-2 position-relative" aria-current="page" href="/admin-panel" style="background: rgba(0, 123, 255, 0.1); transition: all 0.3s ease;">
+              <i class="bi bi-gear"></i> Admin Panel
+            </a>
           </li>
         </ul>
         
@@ -61,6 +66,7 @@ onMounted( async () => {
     const current = await getCurrentUser();
     if (current) {
       startAutoRefresh();
+      user.value = current;
     }
   } catch (error) {
     console.error('Error getting current user:', error);

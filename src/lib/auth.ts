@@ -2,8 +2,8 @@ import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcryptjs'
 
 const encoder = new TextEncoder();
-const accessSecret = encoder.encode(import.meta.env.AUTH_PHRASE);
-const refreshSecret = encoder.encode(import.meta.env.REFRESH_PHRASE);
+const accessSecret = encoder.encode(import.meta.env.PUBLIC_AUTH_PHRASE);
+const refreshSecret = encoder.encode(import.meta.env.PUBLIC_REFRESH_PHRASE);
 
 // 🔑 Token generation
 export const generateAccessToken = async (payload: { [key: string]: string }) => {

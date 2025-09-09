@@ -18,7 +18,7 @@ Dibangun menggunakan **Astro + Vue** dengan backend database **Turso (SQLite + D
 - `.env` → konfigurasi environment (jangan lupa isi sendiri)
 
 ## 🛠️ Teknologi
-- **Frontend**: Astro, Vue 3 (Composition API, `<script setup>`), Bootsrap 5, Bootstrap Icon, SwAl2
+- **Frontend**: Astro, Vue 3 (Composition API, `<script setup>`), Bootsrap 5, Bootstrap Icon
 - **Database**: Turso (SQLite), Drizzle ORM
 - **Auth**: JWT (access + refresh token, disimpan di localStorage)
 - **SMTP**: Zoho Mail
@@ -41,16 +41,18 @@ Dibangun menggunakan **Astro + Vue** dengan backend database **Turso (SQLite + D
 Buat file `.env` di root project:
 
 PUBLIC_URL="http://localhost:4321/" #contoh untuk URL local
-DB_URL="file:./db.sqlite" # contoh lokal, bisa ganti ke Turso
+DB_URL="file:./db.sqlite" #contoh lokal, bisa ganti ke Turso
 DB_TOKEN="gantidenGanTokEn" #ganti dengan token Turso
 SMTP_HOST="smtp.zoho.com" #masukan smtp host yang support TTL atau sesuaikan di code-nya
 SMTP_USER="info@mail.id" #ganti dengan user smtp
 SMTP_PASS="admin1234" #ganti dengan pass smtp
-AUTH_PHRASE="ini_auth_phrase" #ganti dengan auth phrase yang susah ditebak
-REFRESH_PHRASE="ini_refresh_phrase" #ganti dengan refresh phrase yang susah ditebak
+PUBLIC_AUTH_PHRASE="ini_auth_phrase" #ganti dengan auth phrase yang susah ditebak
+PUBLIC_REFRESH_PHRASE="ini_refresh_phrase" #ganti dengan refresh phrase yang susah ditebak
+ENVIRONMENT='development' #sesuaikan dengan kebutuhan
+VERSION='0.0.1' #sesuaikan dengan kebutuhan
 
 ## 📌 Roadmap Fitur Selanjutnya
-- Manajemen staff tim verifikasi
+- ~~Manajemen user dan staff tim verifikasi~~
 - Modul PKKPR:
   - Input data permohonan
   - Input & update hasil verifikasi lapangan
