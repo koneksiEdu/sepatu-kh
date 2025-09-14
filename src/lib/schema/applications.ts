@@ -4,7 +4,7 @@ import { pkkpr } from "./pkkpr";
 export const applications = sqliteTable("applications", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   pkkprId: integer("pkkpr_id").notNull().references(() => pkkpr.id),
-  name: text("name").notNull(),
+  name: text("name"),
   phone: text("phone"),
   actAs: text("act_as"),
   location: text("location"),

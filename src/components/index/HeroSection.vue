@@ -208,9 +208,11 @@ const handleFeatureClick = (feature) => {
   if (!isLogin.value) {
     showModal.value = true;
   } else {
-    // Handle feature navigation for logged in users
-    console.log(`Navigating to ${feature} feature`);
-    // Add your navigation logic here
+    if (feature === 'dokumen') {
+      window.location.href = '/pkkpr-list';
+    } else if (feature === 'spasial') {
+      window.location.href = '/map-view';
+    }
   }
 };
 

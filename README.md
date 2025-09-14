@@ -54,10 +54,9 @@ VERSION='0.0.1' #sesuaikan dengan kebutuhan
 ## 📌 Roadmap Fitur Selanjutnya
 - ~~Manajemen user dan staff tim verifikasi~~
 - Modul PKKPR:
-  - Input data permohonan
-  - Input & update hasil verifikasi lapangan
+  - ~~Input data permohonan~~
+  - ~~Input & update hasil verifikasi lapangan~~
   - Integrasi koordinat ke GeoJSON & peta
-- list & ekspor data
 
 ## 📜 Lisensi
 Proyek ini menggunakan lisensi **MIT**.  

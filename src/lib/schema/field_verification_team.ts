@@ -8,5 +8,4 @@ export const fieldVerificationTeam = sqliteTable("field_verification_team", {
     .notNull()
     .references(() => fieldVerifications.id),
   staffId: integer("staff_id").notNull().references(() => staff.id),
-  role: text("role"), // opsional: Ketua / Anggota
 });

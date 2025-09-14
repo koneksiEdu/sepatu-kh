@@ -38,16 +38,7 @@
             </a>
           </li>
         </ul>
-        
-        <!-- Search form dengan desain modern -->
-        <form class="d-flex align-items-center" role="search">
-          <div class="input-group me-3" style="min-width: 300px;">
-            <input class="form-control border-0 rounded-start-pill px-4 py-2" type="search" placeholder="Cari..." aria-label="Search" style="background: rgba(255, 255, 255, 0.1); color: white; backdrop-filter: blur(10px);">
-            <button class="btn btn-primary border-0 rounded-end-pill px-4" type="submit" style="background: linear-gradient(45deg, #007bff, #00d4ff); transition: all 0.3s ease;">
-              <i class="bi bi-search"></i>
-            </button>
-          </div>
-        </form>
+
       </div>
     </div>
   </nav>
