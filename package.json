@@ -9,6 +9,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/vercel": "^8.2.8",
     "@astrojs/vue": "^5.1.0",
     "@libsql/client": "^0.15.9",
     "astro": "^5.13.3",

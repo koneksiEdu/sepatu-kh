@@ -26,10 +26,13 @@ Dibangun menggunakan **Astro + Vue** dengan backend database **Turso (SQLite + D
   - List tim yang melakukan verifikasi
 
 ## ✨ Fitur di Commit ke-4
-- 📒 **Halaman Peta Spasial**
+- 🗺️ **Halaman Peta Spasial**
   - Peta yang bersikan marker titik PKKPR beserta informasinya
   - Pengaturan hak akses halaman peta
   - export ke GIS
+
+## ✨ Fitur di Commit ke-5
+- ⚙️ **Tambah adapter vercel supaya bisa deploy di vercel**
 
 
 ## 📂 Struktur Utama
