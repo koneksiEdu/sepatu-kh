@@ -1,18 +1,21 @@
 // src/middleware/index.ts
 import type { MiddlewareHandler } from 'astro';
-import { getCurrentUser, clearTokens } from '../lib/auth-utils';
+import { getCurrentUser } from '../lib/auth-utils';
 
-export const onRequest: MiddlewareHandler = async ({ locals, request, redirect }, next) => {
-  const url = new URL(request.url);
+export const onRequest: MiddlewareHandler = async (context, next) => {
+  const { locals, request } = context;
 
-  try {
-    const user = await getCurrentUser();
-    if (user) {
-      locals.user = user;
+  // Hanya jalankan auth logic jika di client side atau jika request tersedia
+  if (typeof window !== 'undefined' || request) {
+    try {
+      const user = await getCurrentUser(request);
+      if (user) {
+        locals.user = user;
+      }
+    } catch (err) {
+      console.error('Failed to get current user:', err);
+      // Tidak perlu clearTokens() di server
     }
-  } catch (err) {
-    console.error('Failed to decode user from token:', err);
-    clearTokens();
   }
 
   if (request.method === 'OPTIONS') {
@@ -26,10 +29,8 @@ export const onRequest: MiddlewareHandler = async ({ locals, request, redirect }
     });
   }
 
-  // Lanjut ke handler berikutnya
   const response = await next();
-
-  // Inject CORS headers ke response global
+  
   response.headers.set('Access-Control-Allow-Origin', '*');
   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
