@@ -1,7 +1,8 @@
+// src/middleware/index.ts
 import type { MiddlewareHandler } from 'astro';
 import { getCurrentUser, clearTokens } from '../lib/auth-utils';
 
-export const authMiddleware: MiddlewareHandler = async ({ locals, request, redirect }, next) => {
+export const onRequest: MiddlewareHandler = async ({ locals, request, redirect }, next) => {
   const url = new URL(request.url);
 
   try {
