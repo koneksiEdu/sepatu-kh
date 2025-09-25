@@ -133,7 +133,7 @@
                   </th>
                   <th class="fw-bold">
                     <i class="bi bi-calendar me-1"></i>
-                    Dibuat
+                    Di-Input
                   </th>
                   <th class="fw-bold text-center">
                     <i class="bi bi-gear me-1"></i>
@@ -367,7 +367,6 @@
               Nomor Telepon Pemohon
             </label>
             <input 
-              type="number"
               v-model="editPkkpr.applicantPhone" 
               class="form-control form-control-lg rounded-pill" 
               placeholder="Masukan nomor telepon pemohon (opsional)"
@@ -528,6 +527,20 @@
 import { ref, onMounted, computed } from "vue";
 import { getCurrentUser } from "../../lib/auth-utils";
 
+interface Application {
+  id: number;
+  pkkprId: number;
+  name: string;
+  phone?: string;
+  actAs?: string;
+  location?: string;
+  landArea?: number;
+  north?: string;
+  south?: string;
+  east?: string;
+  west?: string;
+}
+
 interface Pkkpr {
   id: number;
   title: string;
@@ -543,6 +556,7 @@ interface Pkkpr {
   landBoundaryEast?: string;
   landBoundarySouth?: string;
   landBoundaryWest?: string;
+  applicationCount?: number;
 }
 
 interface Pagination {
@@ -560,6 +574,7 @@ const error = ref<string | null>(null);
 const successMessage = ref<string | null>(null);
 const saving = ref(false);
 const deleting = ref(false);
+const loadingApplications = ref(false);
 
 // Search and filter
 const searchQuery = ref("");
@@ -587,14 +602,27 @@ const editPkkpr = ref<Pkkpr>({
   title: "", 
   type: "", 
   status: "",
-  createdAt: ""
+  createdAt: "",
+  applicantName: "",
+  applicantPhone: "",
+  representativeName: "",
+  location: "",
+  landArea: undefined,
+  landBoundaryNorth: "",
+  landBoundaryEast: "",
+  landBoundarySouth: "",
+  landBoundaryWest: "",
 });
+
+// Application data for edit
+const currentApplication = ref<Application | null>(null);
+
 const token = ref('');
 const pkkprToDelete = ref<Pkkpr | null>(null);
 
 // Computed properties
 const activeCount = computed(() => {
-  return pkkprList.value.filter(item => item.status && item.status.toLowerCase().includes('Terbit')).length;
+  return pkkprList.value.filter(item => item.status && item.status.toLowerCase().includes('terbit')).length;
 });
 
 const visiblePages = computed(() => {
@@ -670,28 +698,116 @@ async function fetchPkkpr() {
   }
 }
 
+async function fetchApplicationByPkkprId(pkkprId: number): Promise<Application | null> {
+  try {
+    loadingApplications.value = true;
+    const res = await fetch(`/api/applications?pkkprId=${pkkprId}`, {
+      headers: {
+        "Authorization": `Bearer ${token.value}`
+      }
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const applications = await res.json();
+    return applications.length > 0 ? applications[0] : null;
+  } catch (err) {
+    console.error("❌ Error fetching application:", err);
+    error.value = `Gagal memuat data aplikasi: ${err instanceof Error ? err.message : 'Unknown error'}`;
+    return null;
+  } finally {
+    loadingApplications.value = false;
+  }
+}
+
 async function savePkkpr() {
   try {
     saving.value = true;
     
-    if (!editPkkpr.value.title.trim() || !editPkkpr.value.type) {
-      error.value = "Judul dan type wajib diisi";
+    if (!editPkkpr.value.title.trim() || !editPkkpr.value.type || !editPkkpr.value.status) {
+      error.value = "Judul, type, dan status wajib diisi";
       return;
     }
 
-    const method = isEdit.value ? "PUT" : "POST";
-    const res = await fetch("/api/pkkpr", {
-      method,
-      headers: { 
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token.value}`
-      },
-      body: JSON.stringify(editPkkpr.value),
-    });
+    if (isEdit.value) {
+      // Update PKKPR
+      const pkkprUpdateRes = await fetch("/api/pkkpr", {
+        method: "PUT",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token.value}`
+        },
+        body: JSON.stringify({
+          id: editPkkpr.value.id,
+          title: editPkkpr.value.title,
+          type: editPkkpr.value.type,
+          status: editPkkpr.value.status
+        }),
+      });
 
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
+      if (!pkkprUpdateRes.ok) {
+        const errorData = await pkkprUpdateRes.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${pkkprUpdateRes.status}`);
+      }
+
+      // Update application if exists
+      if (currentApplication.value) {
+        const appUpdateRes = await fetch("/api/applications", {
+          method: "PUT",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token.value}`
+          },
+          body: JSON.stringify({
+            id: currentApplication.value.id,
+            pkkprId: editPkkpr.value.id,
+            name: editPkkpr.value.applicantName || editPkkpr.value.title,
+            phone: editPkkpr.value.applicantPhone,
+            actAs: editPkkpr.value.representativeName,
+            location: editPkkpr.value.location,
+            landArea: editPkkpr.value.landArea,
+            north: editPkkpr.value.landBoundaryNorth,
+            south: editPkkpr.value.landBoundarySouth,
+            east: editPkkpr.value.landBoundaryEast,
+            west: editPkkpr.value.landBoundaryWest
+          }),
+        });
+
+        if (!appUpdateRes.ok) {
+          const errorData = await appUpdateRes.json().catch(() => ({}));
+          throw new Error(errorData.message || `HTTP error! status: ${appUpdateRes.status}`);
+        }
+      }
+    } else {
+      // Create new PKKPR (existing logic)
+      const res = await fetch("/api/pkkpr", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token.value}`
+        },
+        body: JSON.stringify({
+          title: editPkkpr.value.title,
+          type: editPkkpr.value.type,
+          status: editPkkpr.value.status,
+          applicantName: editPkkpr.value.applicantName,
+          applicantPhone: editPkkpr.value.applicantPhone,
+          representativeName: editPkkpr.value.representativeName,
+          location: editPkkpr.value.location,
+          landArea: editPkkpr.value.landArea,
+          landBoundaryNorth: editPkkpr.value.landBoundaryNorth,
+          landBoundaryEast: editPkkpr.value.landBoundaryEast,
+          landBoundarySouth: editPkkpr.value.landBoundarySouth,
+          landBoundaryWest: editPkkpr.value.landBoundaryWest
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
+      }
     }
     
     await fetchPkkpr();
@@ -768,6 +884,7 @@ function cancelDelete() {
 
 function openCreateModal() {
   isEdit.value = false;
+  currentApplication.value = null;
   editPkkpr.value = { 
     id: 0, 
     title: "", 
@@ -789,9 +906,26 @@ function openCreateModal() {
   document.body.classList.add('modal-open');
 }
 
-function openEditModal(item: Pkkpr) {
+async function openEditModal(item: Pkkpr) {
   isEdit.value = true;
   editPkkpr.value = { ...item };
+  
+  // Fetch application data for this PKKPR
+  currentApplication.value = await fetchApplicationByPkkprId(item.id);
+  
+  // Populate form with application data if available
+  if (currentApplication.value) {
+    editPkkpr.value.applicantName = currentApplication.value.name || "";
+    editPkkpr.value.applicantPhone = currentApplication.value.phone || "";
+    editPkkpr.value.representativeName = currentApplication.value.actAs || "";
+    editPkkpr.value.location = currentApplication.value.location || "";
+    editPkkpr.value.landArea = currentApplication.value.landArea;
+    editPkkpr.value.landBoundaryNorth = currentApplication.value.north || "";
+    editPkkpr.value.landBoundaryEast = currentApplication.value.east || "";
+    editPkkpr.value.landBoundarySouth = currentApplication.value.south || "";
+    editPkkpr.value.landBoundaryWest = currentApplication.value.west || "";
+  }
+  
   showModal.value = true;
   error.value = null;
   document.body.classList.add('modal-open');
@@ -799,6 +933,7 @@ function openEditModal(item: Pkkpr) {
 
 function closeModal() {
   showModal.value = false;
+  currentApplication.value = null;
   error.value = null;
   document.body.classList.remove('modal-open');
 }

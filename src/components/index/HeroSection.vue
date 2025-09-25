@@ -76,7 +76,7 @@
                       </div>
                       <div class="text-center text-lg-start">
                         <h6 class="mb-1 text-white fw-semibold">Peta Spasial</h6>
-                        <small class="text-white-75">Perseberan PKKPR</small>
+                        <small class="text-white-75">Persebaran PKKPR</small>
                       </div>
                     </div>
                   </div>
@@ -88,35 +88,6 @@
           <!-- Visual Elements -->
           <div class="col-lg-6 col-md-12 px-3 px-md-4">
             <div class="hero-visual position-relative text-center">
-              <!-- Floating cards -->
-              <div class="floating-card card-1 position-absolute d-none d-lg-block">
-                <div class="glass-card rounded-4 shadow-lg border-0 p-4">
-                  <div class="d-flex align-items-center">
-                    <div class="icon-wrapper me-3 p-3 rounded-3" style="background: rgba(40, 167, 69, 0.2);">
-                      <i class="bi bi-file-earmark-check text-success fs-4"></i>
-                    </div>
-                    <div class="text-start">
-                      <h6 class="mb-1 text-white fw-bold">Data Terinventarisasi</h6>
-                      <div class="text-white-75">1,247 file</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="floating-card card-2 position-absolute d-none d-lg-block">
-                <div class="glass-card rounded-4 shadow-lg border-0 p-4">
-                  <div class="d-flex align-items-center">
-                    <div class="icon-wrapper me-3 p-3 rounded-3" style="background: rgba(23, 162, 184, 0.2);">
-                      <i class="bi bi-people text-info fs-4"></i>
-                    </div>
-                    <div class="text-start">
-                      <h6 class="mb-1 text-white fw-bold">Pengguna Aktif</h6>
-                      <div class="text-white-75">24 staff</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
               <!-- Central visual element -->
               <div class="hero-central-visual d-flex justify-content-center">
                 <div class="central-circle position-relative">
@@ -125,7 +96,7 @@
                   <div class="circle-inner d-flex align-items-center justify-content-center">
                     <div class="text-center">
                       <i class="bi bi-building text-white mb-3" style="font-size: 4rem;"></i>
-                      <h5 class="text-white fw-bold mb-2">SEPATU</h5>
+                      <h5 class="text-white fw-bold mb-2">SEPATU KH</h5>
                     </div>
                   </div>
                 </div>
@@ -147,8 +118,8 @@
     <!-- Wave decoration -->
     <div class="wave-decoration position-absolute bottom-0 w-100"></div>
 
-    <!-- Modal for non-registered users - FIXED CENTERING -->
-    <div v-if="showModal" class="modal-overlay" @click="closeModal">
+    <!-- Modal for non-registered users -->
+    <div v-if="showModal && modalType === 'registration'" class="modal-overlay" @click="closeModal">
       <div class="modal-container" @click.stop>
         <div class="modal-content">
           <div class="modal-header">
@@ -191,6 +162,47 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal for internal staff only -->
+    <div v-if="showModal && modalType === 'internal'" class="modal-overlay" @click="closeModal">
+      <div class="modal-container" @click.stop>
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="bi bi-shield-exclamation me-2 text-warning"></i>
+              Akses Terbatas - Tim Internal
+            </h5>
+            <button type="button" class="btn-close" @click="closeModal" aria-label="Close">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="text-center mb-4">
+              <div class="mb-3">
+                <i class="bi bi-geo-alt-fill text-primary" style="font-size: 3rem;"></i>
+              </div>
+              <h6 class="fw-semibold mb-3">Hanya Tim Internal Tata Ruang</h6>
+              <p class="text-muted mb-4">
+                Fitur Peta Spasial hanya dapat diakses oleh Tim Internal Tata Ruang atau pemangku kepentingan yang telah terverifikasi dalam sistem SEPATU KH.
+              </p>
+            </div>
+            
+            <div class="d-grid gap-2">
+              <button type="button" class="btn btn-outline-primary" @click="closeModal">
+                <i class="bi bi-arrow-left me-2"></i>
+                Kembali ke Beranda
+              </button>
+            </div>
+            
+            <div class="text-center mt-3">
+              <small class="text-muted">
+                Hubungi administrator untuk informasi lebih lanjut mengenai akses fitur ini
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -199,19 +211,28 @@ import { ref, onMounted } from 'vue';
 import { isAuthenticated, getCurrentUser } from '../../lib/auth-utils';
 
 // Reactive variables
-const isLogin = ref(false); // Set to false for now, will be replaced with actual auth logic
+const isLogin = ref(false);
 const showModal = ref(false);
+const modalType = ref('registration'); // 'registration' or 'internal'
 const user = ref(null);
+const isLoading = ref(true);
 
 // Methods
 const handleFeatureClick = (feature) => {
   if (!isLogin.value) {
+    modalType.value = 'registration';
     showModal.value = true;
   } else {
     if (feature === 'dokumen') {
       window.location.href = '/pkkpr-list';
     } else if (feature === 'spasial') {
-      window.location.href = '/map-view';
+      // Check if user has access to spatial map (admin or user roles only)
+      if (user.value && (user.value.role === 'admin' || user.value.role === 'user')) {
+        window.location.href = '/map-view';
+      } else {
+        modalType.value = 'internal';
+        showModal.value = true;
+      }
     }
   }
 };
@@ -229,6 +250,7 @@ onMounted(async() => {
     console.error('Error getting current user:', error);
     isLogin.value = false;
   }
+  
   // Add smooth scrolling animation if scroll indicator exists
   const scrollIndicator = document.querySelector('.scroll-indicator');
   if (scrollIndicator) {

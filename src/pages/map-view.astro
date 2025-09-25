@@ -1,0 +1,47 @@
+---
+import Layout from '../layouts/Layout.astro';
+import MapPKKPR from '../components/spatial-map/MapPKKPR.vue';
+---
+
+<Layout pageTitle="Peta PKKPR">
+  <!-- Leaflet CSS dan JS di head -->
+  <link 
+    slot="head" 
+    rel="stylesheet" 
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <script 
+    slot="head" 
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  
+  <!-- Additional CSS for map container -->
+  <style slot="head">
+    /* Ensure proper rendering of Leaflet map */
+    .leaflet-container {
+      width: 100% !important;
+      height: 100% !important;
+      position: relative !important;
+      z-index: 1 !important;
+    }
+    
+    /* Force visibility of all Leaflet elements */
+    .leaflet-control-container,
+    .leaflet-tile,
+    .leaflet-tile-pane,
+    .leaflet-objects-pane,
+    .leaflet-marker-pane,
+    .leaflet-popup-pane {
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+  </style>
+  <!-- Map component with client:load and explicit hydration -->
+  <div id="map-container">
+    <MapPKKPR client:load client:only="vue" />
+  </div>
+</Layout>

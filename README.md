@@ -9,8 +9,28 @@ Dibangun menggunakan **Astro + Vue** dengan backend database **Turso (SQLite + D
   - Login
   - Reset password
   - Verifikasi email
-- 🏠 **Home Page** setelah login (masih konsep belum selesai)
-- 🎯 Role dasar pengguna: admin, staff, publik (disiapkan untuk kontrol akses)
+- 🏠 **Home Page** setelah login
+- 🎯 Role dasar pengguna: admin, user, guest (disiapkan untuk kontrol akses)
+
+## ✨ Fitur di Commit ke-2
+- ⚙️ **Admin Panel**
+  - Manajemen staff (admin bisa input staff tata ruang beserta jabatannya untuk fitur verif lapangan)
+  - Manajemen user (admin bisa ubah data pengguna, verifikasi dan ubah password manual)
+  - Export data user ke CSV
+
+## ✨ Fitur di Commit ke-3
+- 📒 **List PKKPR** yang berisikan informasi dasar permohonan
+- ⚙️ **Detail PKKPR**
+  - Permohonan PKKPR yang lebih detail
+  - Data dasar verifikasi lapangan
+  - List tim yang melakukan verifikasi
+
+## ✨ Fitur di Commit ke-4
+- 📒 **Halaman Peta Spasial**
+  - Peta yang bersikan marker titik PKKPR beserta informasinya
+  - Pengaturan hak akses halaman peta
+  - export ke GIS
+
 
 ## 📂 Struktur Utama
 - `src/` → kode utama proyek (Astro + Vue components)
