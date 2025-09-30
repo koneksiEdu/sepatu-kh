@@ -394,8 +394,13 @@
             <input 
               v-model="editPkkpr.location" 
               class="form-control form-control-lg rounded-pill" 
-              placeholder="Masukkan lokasi yang dimohonkan (opsional)"
+              placeholder="Masukkan lokasi yang dimohonkan"
+              required
             />
+            <div v-if="!editPkkpr.location" class="form-text text-danger">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              Lokasi wajib diisi
+            </div>
           </div>
 
           <!-- Land area Field (Number Input) -->
@@ -409,6 +414,7 @@
               v-model="editPkkpr.landArea" 
               class="form-control form-control-lg rounded-pill" 
               placeholder="Masukkan luas tanah (opsional)"
+              min="0"
             />
           </div>
 
@@ -821,6 +827,7 @@ async function savePkkpr() {
     }, 5000);
     
   } catch (err) {
+    closeModal();
     console.error("❌ Error saving PKKPR:", err);
     error.value = `Gagal menyimpan data: ${err instanceof Error ? err.message : 'Unknown error'}`;
   } finally {

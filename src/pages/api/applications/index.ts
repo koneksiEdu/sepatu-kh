@@ -109,6 +109,21 @@ export const PUT: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ message: "ID dan nama wajib diisi" }), { status: 400 });
     }
 
+    const phoneRegex = /^(?:\+628|08)[0-9]{7,13}$/;
+
+    if (phone && !phoneRegex.test(phone)) {
+      return new Response(JSON.stringify({ 
+        message: "Nomor HP tidak valid. Gunakan format 08... atau +628..., hanya angka, min 9 digit max 15 digit." 
+      }), { status: 400, headers: { "Content-Type": "application/json" } });
+    }
+
+       // ✅ Validasi luas tanah (tidak boleh negatif)
+    if (landArea < 0) {
+      return new Response(JSON.stringify({ 
+        message: "Luas tanah tidak boleh bernilai negatif" 
+      }), { status: 400, headers: { "Content-Type": "application/json" } });
+    }
+
     await raguBase
       .update(applications)
       .set({

@@ -149,6 +149,20 @@ export const POST: APIRoute = async ({ request }) => {
         headers: { "Content-Type": "application/json" }
       });
     }
+    const phoneRegex = /^(?:\+628|08)[0-9]{7,13}$/;
+
+    if (applicantPhone && !phoneRegex.test(applicantPhone)) {
+      return new Response(JSON.stringify({ 
+        message: "Nomor HP tidak valid. Gunakan format 08... atau +628..., hanya angka, min 9 digit max 15 digit." 
+      }), { status: 400, headers: { "Content-Type": "application/json" } });
+    }
+
+       // ✅ Validasi luas tanah (tidak boleh negatif)
+    if (landArea < 0) {
+      return new Response(JSON.stringify({ 
+        message: "Luas tanah tidak boleh bernilai negatif" 
+      }), { status: 400, headers: { "Content-Type": "application/json" } });
+    }
 
     const pkkprGeneral = await raguBase
       .insert(pkkpr)
@@ -283,21 +297,6 @@ export const DELETE: APIRoute = async ({ request }) => {
         message: "PKKPR tidak ditemukan" 
       }), {
         status: 404,
-        headers: { "Content-Type": "application/json" }
-      });
-    }
-
-    // Check if there are applications related to this PKKPR
-    const relatedApplications = await raguBase
-      .select({ count: count() })
-      .from(applications)
-      .where(eq(applications.pkkprId, id));
-
-    if (relatedApplications[0].count > 0) {
-      return new Response(JSON.stringify({ 
-        message: `Tidak dapat menghapus PKKPR karena masih ada ${relatedApplications[0].count} aplikasi terkait` 
-      }), {
-        status: 400,
         headers: { "Content-Type": "application/json" }
       });
     }
