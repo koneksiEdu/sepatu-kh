@@ -34,6 +34,9 @@ Dibangun menggunakan **Astro + Vue** dengan backend database **Turso (SQLite + D
 ## ✨ Fitur di Commit ke-5
 - ⚙️ **Tambah adapter vercel supaya bisa deploy di vercel**
 
+## Update di Commit ke-8
+- Aplikasi sudah masuk versi stable setelah ini setiap perubahan baik minor maupun mayor akan diperbaharui di bagian release
+
 
 ## 📂 Struktur Utama
 - `src/` → kode utama proyek (Astro + Vue components)
@@ -72,7 +75,7 @@ SMTP_PASS="admin1234" #ganti dengan pass smtp
 PUBLIC_AUTH_PHRASE="ini_auth_phrase" #ganti dengan auth phrase yang susah ditebak
 PUBLIC_REFRESH_PHRASE="ini_refresh_phrase" #ganti dengan refresh phrase yang susah ditebak
 ENVIRONMENT='development' #sesuaikan dengan kebutuhan
-VERSION='0.0.1' #sesuaikan dengan kebutuhan
+VERSION='1.0.0' #sesuaikan dengan kebutuhan
 
 ## 📌 Roadmap Fitur Selanjutnya
 - ~~Manajemen user dan staff tim verifikasi~~
